@@ -21,18 +21,18 @@
               </thead>
               <tbody>
                   <!-- below track by $index ignores duplicate values -->
-                  <tr ng-repeat="item in items track by $index">
+                  <tr ng-repeat="holding in holdings track by $index">
                     <td>
-                      <span ng-bind="item.name" ng-if="!item.show"></span>
-                      <input type="text" name="name" ng-model="item.name" ng-if="item.show">
+                      <span ng-bind="holding.name" ng-if="!holding.show"></span>
+                      <input type="text" name="name" ng-model="holding.name" ng-if="holding.show">
                     </td>
                     <td>
-                      <span ng-bind="item.location" ng-if="!item.show"></span>
-                      <input type="text" name="location" ng-model="item.location" ng-if="item.show">
+                      <span ng-bind="holding.location" ng-if="!holding.show"></span>
+                      <input type="text" name="location" ng-model="holding.location" ng-if="holding.show">
                     </td>
                     <td>
-                        <button ng-click="change($index)" ng-if="!item.show">Edit</button>
-                        <button ng-click="change($index)" ng-if="item.show">Save</button>
+                        <button ng-click="change($index)" ng-if="!holding.show">Edit</button>
+                        <button ng-click="change($index)" ng-if="holding.show">Save</button>
                         <button ng-click="delete($index)">Delete</button>
                     </td>
                   </tr>
@@ -43,29 +43,29 @@
           angular
             .module("tableApp",[])
             .controller('tableCtrl', ['$scope', function ($scope) {
-                if (localStorage.getItem("items") === null) {
-                  $scope.items = [
+                if (localStorage.getholding("holdings") === null) {
+                  $scope.holdings = [
                           {name:"avinash",location:"Hyderabad",show:false},
                           {name:"gouthami",location:"Hyderabad",show:false},
                           {name:"karthik",location:"secunderabad",show:false},
                           {name:"vinay",location:"mumbai",show:false},
                       ];
-                  localStorage.setItem("items", JSON.stringify($scope.items));
+                  localStorage.setholding("holdings", JSON.stringify($scope.holdings));
                 }else {
-                  $scope.items = JSON.parse(localStorage.getItem("items"));
+                  $scope.holdings = JSON.parse(localStorage.getholding("holdings"));
                 }
                 $scope.add = function() {
-                  var newitem = {name:"test",location:"test",show:false};
-                  $scope.items.push(newitem);
-                  localStorage.setItem("items", JSON.stringify($scope.items));
+                  var newholding = {name:"test",location:"test",show:false};
+                  $scope.holdings.push(newholding);
+                  localStorage.setholding("holdings", JSON.stringify($scope.holdings));
                 }
                 $scope.change = function(ind) {
-                  $scope.items[ind].show = !($scope.items[ind].show);
-                  localStorage.setItem("items", JSON.stringify($scope.items));
+                  $scope.holdings[ind].show = !($scope.holdings[ind].show);
+                  localStorage.setholding("holdings", JSON.stringify($scope.holdings));
                 }
                 $scope.delete = function(ind) {
-                  $scope.items.splice($scope.items.indexOf(ind), 1); 
-                  localStorage.setItem("items", JSON.stringify($scope.items));
+                  $scope.holdings.splice($scope.holdings.indexOf(ind), 1); 
+                  localStorage.setholding("holdings", JSON.stringify($scope.holdings));
                 }
             }])
       </script>

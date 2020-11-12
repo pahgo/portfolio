@@ -1,0 +1,12 @@
+<div ng-cloak ng-controller="ApiController">
+    <md-content class="md-padding">
+        <form ng-submit="$event.preventDefault()">
+            <md-autocomplete md-selected-item="selectedItem" md-items="item in query(searchText)" md-search-text="searchText" md-item-text="item.shortname">
+                <md-item-template>
+                  <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.exchange + ": " + item.shortname}}</span>
+                </md-item-template>
+                <md-not-found>No stocks matching "{{ctrl.searchText}}" were found.</md-not-found>
+            </md-autocomplete>
+        </form>
+    </md-content>
+</div>	 
