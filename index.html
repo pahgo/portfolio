@@ -214,7 +214,9 @@ app.controller('MainCtrl', function($scope, $http) {
 // app.controller('tableCtrl', function($scope, $http) {
   	if (localStorage.getItem("holdings") === null) {
 		$scope.holdings = [
-			{name:"Advanced Micro Devices",shares:5, enter:75, coin:"usd", commissions:0.51, editing: false},
+			{name:{exchange:"NMS",shortname:"Advanced Micro Devices, Inc.",quoteType:"EQUITY",symbol:"AMD",index:"quotes",score:14269400,typeDisp:"Equity",longname:"Advanced Micro Devices, Inc.",isYahooFinance:true},
+			shares:5,enter:75,coin:"usd",commissions:0.51,editing:false
+			}
 		];
 		localStorage.setItem("holdings", JSON.stringify($scope.holdings));
 	} else {
