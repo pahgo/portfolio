@@ -5,23 +5,15 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-aria.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-messages.min.js"></script>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
-<script src="https://gitcdn.xyz/cdn/angular/bower-material/v1.2.1/angular-material.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+<script src="https://gitcdn.xyz/cdn/angular/bower-material/v1.2.1/angular-material.js"></script>
+
 <link rel="stylesheet" href="https://material.angularjs.org/1.2.1/docs.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="icon" href="/favicon.png"> 
 
-<!-- <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap.js"></script> -->
-<script src="https://gitcdn.xyz/cdn/angular/bower-material/v1.2.1/angular-material.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-route.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-<link rel="stylesheet" href="https://gitcdn.xyz/cdn/angular/bower-material/v1.2.1/angular-material.css">
-<!-- <script src="autocomplete.js"></script> -->
 
-<script src="controllers.js"></script>
 <body>
 <div ng-app="app" class="container" ng-controller="MainCtrl">
 
@@ -122,15 +114,17 @@
 		<div class="row text-center">
 			<div class="col-lg-3 col-md-6 mb-4">
 				<div class="card h-100">
-					<canvas id="invested" class="chart chart-pie" chart-data="amountInvested" chart-labels="labels"></canvas>
+					<div class="card-header"><h5 class="card-title">Open positions</h5></div>
+					<canvas id="invested" class="chart chart-pie" chart-data="amountInvested" chart-colors="openColours" chart-labels="openLabels"></canvas>
 					<div class="card-body">
-						<h5 class="card-title">Size by investing amount</h5>
+						<h5 class="card-title">Size by invested amount</h5>
 					</div>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-6 mb-4">
-				<div class="card h-100">
-					<canvas id="currentValue" class="chart chart-pie" chart-data="currentValue" chart-labels="labels"></canvas>
+				<div class="card h-100 ">
+					<div class="card-header"><h5 class="card-title">Open positions</h5></div>
+					<canvas id="currentValue" class="chart chart-pie" chart-data="currentValue" chart-colors="openColours" chart-labels="openLabels"></canvas>
 					<div class="card-body">
 						<h5 class="card-title">Size by current value</h5>
 					</div>
@@ -138,7 +132,35 @@
 			</div>
 			<div class="col-lg-5 col-md-6 mb-4">
 				<div class="card h-100">
-					<canvas id="Profit" class="chart chart-horizontal-bar" chart-data="profitability" chart-labels="labels"></canvas>
+					<div class="card-header"><h5 class="card-title">Open positions</h5></div>
+					<canvas id="Profit" class="chart chart-horizontal-bar" chart-type="logarithmic" chart-colors="openColours" chart-data="profitabilityOpen" chart-labels="openLabels"></canvas>
+					<div class="card-body">
+						<h5 class="card-title">Profit of operation</h5>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4">
+				<div class="card h-100">
+					<div class="card-header"><h5 class="card-title">Closed positions</h5></div>
+					<canvas id="amountInvestedClosed" class="chart chart-pie" chart-data="amountInvestedClosed" chart-colors="soldColours" chart-labels="closedLabels"></canvas>
+					<div class="card-body">
+						<h5 class="card-title">Size by invested amount</h5>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 mb-4">
+				<div class="card h-100">
+					<div class="card-header"><h5 class="card-title">Closed positions</h5></div>
+					<canvas id="finalValue" class="chart chart-pie" chart-data="finalValue" chart-colors="soldColours" chart-labels="closedLabels"></canvas>
+					<div class="card-body">
+						<h5 class="card-title">Size by current value</h5>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-5 col-md-6 mb-4">
+				<div class="card h-100">
+					<div class="card-header"><h5 class="card-title">Closed positions</h5></div>
+					<canvas id="profitabilityClosed" class="chart chart-horizontal-bar" chart-colors="soldColours" chart-data="profitabilityClosed" chart-labels="closedLabels"></canvas>
 					<div class="card-body">
 						<h5 class="card-title">Profit of operation</h5>
 					</div>
@@ -258,11 +280,18 @@ app.controller('MainCtrl', function($scope, $http) {
 	function updateVariables() {
 		$scope.soldOperations = $scope.holdings.filter(h => h.status === 'Sold');
 		$scope.totalResults = $scope.holdings.reduce((a,b) => +a + +($scope.currentVal(b) - $scope.enterCost(b)), 0).toFixed(2);
-		$scope.amountInvested = $scope.holdings.filter(h => h.status != 'Sold').map(h => (h.enter * h.shares).toFixed(2));
-		$scope.currentValue = $scope.holdings.filter(h => h.status != 'Sold').map(h => (h.currentPrice * h.shares).toFixed(2));
-		$scope.profitability = $scope.holdings.map(h => (((h.currentPrice * h.shares)/(h.enter * h.shares) -1)*100).toFixed(2));
-		$scope.labels = $scope.holdings.map(h => h.name.shortname);
+		$scope.amountInvested = $scope.holdings.filter(h => h.status === 'Buy').map(h => (h.enter * h.shares).toFixed(2));
+		$scope.currentValue = $scope.holdings.filter(h => h.status === 'Buy').map(h => (h.currentPrice * h.shares).toFixed(2));
+		$scope.profitabilityOpen = $scope.holdings.filter(h => h.status === 'Buy').map(h => (((h.currentPrice * h.shares)/(h.enter * h.shares) -1)*100).toFixed(2));
+		$scope.labels = $scope.holdings.map(h => h.name.symbol);
+		$scope.openLabels = $scope.holdings.filter(h => h.status === 'Buy').map(h => h.name.symbol);
 		$scope.openPositions = $scope.holdings.filter(h => h.status === 'Buy');
+		$scope.profitabilityClosed = $scope.holdings.filter(h => h.status === 'Sold').map(h => (((h.currentPrice * h.shares)/(h.enter * h.shares) -1)*100).toFixed(2));
+		$scope.amountInvestedClosed = $scope.holdings.filter(h => h.status === 'Sold').map(h => (h.enter * h.shares).toFixed(2));
+		$scope.finalValue = $scope.holdings.filter(h => h.status === 'Sold').map(h => (h.currentPrice * h.shares).toFixed(2));
+		$scope.closedLabels = $scope.holdings.filter(h => h.status === 'Sold').map(h => h.name.symbol);
+		$scope.openColours = ["#0069af","#e42220","#eb671c","#feda02","#90c02e","#46a1d8","#243d91","#70368b"];
+		$scope.soldColours = ["#3e4d2d","#69652d","#937c2c","#875249","#7b2865","#bd94b2","#ffffff","#858585","#0a0a0a"];
 	}
 	updateVariables();
 });
