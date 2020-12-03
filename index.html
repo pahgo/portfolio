@@ -1,308 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-animate.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-aria.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-messages.min.js"></script>
-<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
-<script src="https://gitcdn.xyz/cdn/angular/bower-material/v1.2.1/angular-material.js"></script>
-
-<link rel="stylesheet" href="https://material.angularjs.org/1.2.1/docs.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="icon" href="/favicon.png"> 
-
-
-<body>
-<div ng-app="app" class="container" ng-controller="MainCtrl">
-
-    <!-- <div class="" ng-controller="tableCtrl"> -->
-	<div class="" >
-		<div class="table-wrapper">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-sm-8"><h2>Transactions <b>details</b></h2></div>
-                    <div class="col-sm-4">
-						<!-- <button ng-click="getCurrentPrices()" ng-controller="ApiController" class="btn btn-info">Check Prices</button> -->
-						<button ng-click="getCurrentPrices()" class="btn btn-info">Check Prices</button>
+   <link rel="icon" href="assets/favicon.png">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+   <link rel="stylesheet" href="https://gitcdn.xyz/cdn/angular/bower-material/v1.2.1/angular-material.css">
+   <link rel="stylesheet" href="https://material.angularjs.org/1.2.1/docs.css">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+   <script src="https://gitcdn.xyz/cdn/angular/bower-material/v1.2.1/angular-material.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-animate.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-aria.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-messages.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-route.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+   <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
+   <script src="./index.js"></script>
+   <script src="./charts.js"></script>
+   <script src="./holdingsTable.js"></script>
+   <body ng-app="app">
+      <div class="container" ng-controller="MainCtrl as ctrl">
+         <div>
+            <div class="table-wrapper">
+               <div class="table-title">
+                  <div class="row">
+                     <div class="col-sm-8">
+                        <h2>Transactions <b>deetails</b></h2>
+                     </div>
+                     <div class="col-sm-4">
                         <button ng-click="add()" type="button" class="btn btn-success add-new"><i class="fa fa-plus"></i> Add New</button>
-                    </div>
-                </div>
+                        <button ng-click="getCurrentPrices()" class="btn btn-primary">Check Prices</button>
+                        <button ng-click="download()" class="btn btn-info"><i class="fa fa-download"></i> Download</button>
+                        <button ng-click="upload()" class="btn btn-info"><i class="fa fa-upload"></i>&nbsp;Upload</button>
+                        <input id="uploadFile" type="file" hidden>
+                     </div>
+                  </div>
+               </div>
+               <holdings-table holdings="holdings"></holdings-table>
             </div>
-			<table class="table table-bordered table-hover">
-				<thead class="thead-light">
-					<tr>
-						<th scope="col">Symbol</th>
-						<th scope="col">Status</th>
-						<th scope="col">Shares</th>
-						<th scope="col">Enter Price</th>
-						<th scope="col">Commissions</th>
-						<th scope="col">Enter Cost</th>
-						<th scope="col">Current Price per share</th>
-						<th scope="col">Current Value</th>
-						<th scope="col">Result</th>
-						<th scope="col"></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="holding in holdings track by $index">
-						<th scope="row" class="align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
-							<span ng-bind="holding.name.shortname" ng-if="!holding.editing"></span>
-							<div ng-cloak ng-if="holding.editing">
-								<!-- <div ng-cloak ng-controller="ApiController" ng-if="holding.editing"> -->
-								<md-content class="md-padding">
-									<!-- <form ng-submit="$event.preventDefault()"> -->
-										<md-autocomplete md-selected-item="holding.name" md-items="item in autocompleteQuery(searchText)" md-search-text="searchText" md-item-text="item.shortname">
-											<md-item-template>
-											<span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.exchange + ": " + item.shortname}}</span>
-											</md-item-template>
-											<md-not-found>No stocks matching "{{ctrl.searchText}}" were found.</md-not-found>
-										</md-autocomplete>
-									<!-- </form> -->
-								</md-content>
-							</div>
-						</th>
-						<td class="text-center align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
-							<span ng-bind="holding.status"></span>
-						</td>
-						<td class="text-center align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
-							<span ng-bind="holding.shares" ng-if="!holding.editing"></span>
-							<input type="number" name="shares" ng-model="holding.shares" ng-if="holding.editing">
-						</td>
-						<td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
-							<span ng-bind="holding.enter" ng-if="!holding.editing"></span>
-							<input type="number" name="enter" ng-model="holding.enter" ng-if="holding.editing">
-						</td>
-						<td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
-							<span ng-bind="holding.commissions" ng-if="!holding.editing"></span>
-							<input type="number" name="commissions" ng-model="holding.commissions" ng-if="holding.editing">
-						</td>
-						<td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">{{ enterCost(holding) }}</td>
-						<td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
-							<span ng-bind="holding.currentPrice" ng-if="holding.status != 'Selling'"></span>
-							<input type="number" name="currentPrice" ng-model="holding.currentPrice" ng-if="holding.status === 'Selling'">
-						</td>
-						<td class="table-success text-center font-weight-bold align-middle" ng-class="{'table-danger' : enterCost(holding) > currentVal(holding)}">{{ currentVal(holding) }}</td>
-						<td class="table-success text-center font-weight-bold align-middle" ng-class="{'table-danger' : enterCost(holding) > currentVal(holding)}">{{ (currentVal(holding) - enterCost(holding)+holding.commissions).toFixed(2) }}</td>
-						<td class="align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
-                            <button class="btn btn-primary" title="Edit" ng-click="change($index)" ng-if="!holding.editing">Edit</button>
-                            <button class="btn btn-success" title="Save" ng-click="change($index)" ng-if="holding.editing">Save</button>
-							<button class="btn btn-warning" title="Sell" ng-click="sell($index)" ng-if="holding.status != 'Selling' && holding.status != 'Sold'">Sell</button>
-							<button class="btn btn-success" title="Confirm" ng-click="confirmSell($index)" ng-if="holding.status === 'Selling'">Confirm</button>
-							<button class="btn btn-danger" ng-click="delete($index)">Delete</button>
-						</td>
-					</tr>
-					<tfoot>
-						<tr class="text-center font-weight-bold align-middle">
-							<td class="table-dark"><span>{{holdings.length}} operations</span></td>
-							<td class="table-dark">{{soldOperations.length}} sold</td>
-							<td class="table-dark"></td>
-							<td class="table-dark"></td>
-							<td class="table-dark"></td>
-							<td class="table-dark"></td>
-							<td class="table-dark"></td>
-							<td class="table-dark"></td>
-							<td ng-class="{'table-danger' : totalResults &lt; 0 }" class="table-success"><span ng-bind="totalResults"></span></td>
-							<td class="table-dark"></td>
-						</tr>
-					</tfoot>
-
-				</tbody>  
-			</table>
-        </div>
-		<div class="row text-center">
-			<div class="col-lg-3 col-md-6 mb-4">
-				<div class="card h-100">
-					<div class="card-header"><h5 class="card-title">Open positions</h5></div>
-					<canvas id="invested" class="chart chart-pie" chart-data="amountInvested" chart-colors="openColours" chart-labels="openLabels"></canvas>
-					<div class="card-body">
-						<h5 class="card-title">Size by invested amount</h5>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-md-6 mb-4">
-				<div class="card h-100 ">
-					<div class="card-header"><h5 class="card-title">Open positions</h5></div>
-					<canvas id="currentValue" class="chart chart-pie" chart-data="currentValue" chart-colors="openColours" chart-labels="openLabels"></canvas>
-					<div class="card-body">
-						<h5 class="card-title">Size by current value</h5>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-5 col-md-6 mb-4">
-				<div class="card h-100">
-					<div class="card-header"><h5 class="card-title">Open positions</h5></div>
-					<canvas id="Profit" class="chart chart-horizontal-bar" chart-type="logarithmic" chart-colors="openColours" chart-data="profitabilityOpen" chart-labels="openLabels"></canvas>
-					<div class="card-body">
-						<h5 class="card-title">Profit of operation</h5>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-md-6 mb-4">
-				<div class="card h-100">
-					<div class="card-header"><h5 class="card-title">Closed positions</h5></div>
-					<canvas id="amountInvestedClosed" class="chart chart-pie" chart-data="amountInvestedClosed" chart-colors="soldColours" chart-labels="closedLabels"></canvas>
-					<div class="card-body">
-						<h5 class="card-title">Size by invested amount</h5>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-md-6 mb-4">
-				<div class="card h-100">
-					<div class="card-header"><h5 class="card-title">Closed positions</h5></div>
-					<canvas id="finalValue" class="chart chart-pie" chart-data="finalValue" chart-colors="soldColours" chart-labels="closedLabels"></canvas>
-					<div class="card-body">
-						<h5 class="card-title">Size by current value</h5>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-5 col-md-6 mb-4">
-				<div class="card h-100">
-					<div class="card-header"><h5 class="card-title">Closed positions</h5></div>
-					<canvas id="profitabilityClosed" class="chart chart-horizontal-bar" chart-colors="soldColours" chart-data="profitabilityClosed" chart-labels="closedLabels"></canvas>
-					<div class="card-body">
-						<h5 class="card-title">Profit of operation</h5>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="table-wrapper">
-			<table class="table table-bordered table-hover">
-				<thead class="thead-light">
-					<tr>
-						<th scope="col">Symbol</th>
-						<th scope="col" title="Price to earnings">PE Ratio (TTM)</th>
-						<th scope="col" title="Earnings per share">EPS (TTM)</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="holding in openPositions track by $index">
-						<th scope="row" class="align-middle"><span ng-bind="holding.name.shortname"></span></th>
-						<th scope="row" class="align-middle"><span ng-bind="holding.market.trailingPE.toFixed(2)"></span></th>
-						<th scope="row" class="align-middle"><span ng-bind="holding.market.epsTrailingTwelveMonths.toFixed(2)"></span></th>						
-					</tr>
-			</table>
-		</div>
-	</div>
-</div>
-</body>
-<script>
-var app = angular.module('app', ['ngMaterial', 'ngMessages', 'material.svgAssetsCache', 'chart.js']);
-app.controller('MainCtrl', function($scope, $http) {
-	$scope.autocompleteQuery = function(searchText) {
-		//calls are expensive, use this to mock it
-		var results = {"explains":[],"count":15,"quotes":[{"exchange":"NMS","shortname":"Advanced Micro Devices, Inc.","quoteType":"EQUITY","symbol":"AMD","index":"quotes","score":5.93623E7,"typeDisp":"Equity","longname":"Advanced Micro Devices, Inc.","isYahooFinance":true},{"exchange":"CCY","shortname":"USD/AMD","quoteType":"CURRENCY","symbol":"AMD=X","index":"quotes","score":30208.0,"typeDisp":"Currency","isYahooFinance":true},{"exchange":"CCY","shortname":"AMD/RUX","quoteType":"CURRENCY","symbol":"AMDRUX=X","index":"quotes","score":30022.0,"typeDisp":"Currency","isYahooFinance":true},{"exchange":"CCY","shortname":"AMD/BRX","quoteType":"CURRENCY","symbol":"AMDBRX=X","index":"quotes","score":30015.0,"typeDisp":"Currency","isYahooFinance":true},{"exchange":"NMS","shortname":"Amdocs Limited","quoteType":"EQUITY","symbol":"DOX","index":"quotes","score":22649.0,"typeDisp":"Equity","longname":"Amdocs Limited","isYahooFinance":true},{"exchange":"NAS","shortname":"American Century Mid Cap Value ","quoteType":"MUTUALFUND","symbol":"AMDVX","index":"quotes","score":20180.0,"typeDisp":"Fund","longname":"American Century Mid Cap Value Fund R6 Class","isYahooFinance":true},{"exchange":"GER","shortname":"ADVANCED MIC.DEV.  DL-,01","quoteType":"EQUITY","symbol":"AMD.DE","index":"quotes","score":20078.0,"typeDisp":"Equity","longname":"Advanced Micro Devices, Inc.","isYahooFinance":true}],"news":[{"uuid":"fc76dbe8-0fb0-3994-9165-97b0738738eb","title":"AMD's PC CPU and GPU Chief Discusses Current and Next-Gen Products","publisher":"TheStreet.com","link":"https://finance.yahoo.com/m/fc76dbe8-0fb0-3994-9165-97b0738738eb/amd%27s-pc-cpu-and-gpu-chief.html","providerPublishTime":1605019740,"type":"STORY"},{"uuid":"180081b5-5618-32ea-9b04-61f657a0b414","title":"AMD Unveils AMD Ryzen™ Embedded V2000 Processors with Enhanced Performance and Power Efficiency","publisher":"GlobeNewswire","link":"https://finance.yahoo.com/news/amd-unveils-amd-ryzen-embedded-140000963.html","providerPublishTime":1605016800,"type":"STORY"},{"uuid":"719f351f-54eb-383a-9205-dd45b5d382e3","title":"Clearside Biomedical Announces Third Quarter 2020 Financial Results and Provides Corporate Update","publisher":"GlobeNewswire","link":"https://finance.yahoo.com/news/clearside-biomedical-announces-third-quarter-210500471.html","providerPublishTime":1605042300,"type":"STORY"},{"uuid":"e204a3e9-f06d-3fc6-b621-13dab5a7cc92","title":"Why Shares of Zoom, Pinterest, and Advanced Micro Devices Fell Today","publisher":"Motley Fool","link":"https://finance.yahoo.com/m/e204a3e9-f06d-3fc6-b621-13dab5a7cc92/why-shares-of-zoom%2C.html","providerPublishTime":1605036360,"type":"STORY"},{"uuid":"9a45477d-cb2b-3056-a034-6420f176d7e2","title":"Dow Jones Futures: Stock Market Rotation Continues; 6 Tech Giants Sell Off","publisher":"Investor's Business Daily","link":"https://finance.yahoo.com/m/9a45477d-cb2b-3056-a034-6420f176d7e2/dow-jones-futures%3A-stock.html","providerPublishTime":1605047277,"type":"STORY"},{"uuid":"0b7fb3ca-59dc-315d-b328-f4ff0d97b8bb","title":"Model N Announces Fourth Quarter and Fiscal Year 2020 Financial Results","publisher":"Business Wire","link":"https://finance.yahoo.com/news/model-n-announces-fourth-quarter-211500171.html","providerPublishTime":1605042900,"type":"STORY"},{"uuid":"95df8b47-493d-3d8a-b3e5-43f1f660de6d","title":"AMD Launches AMD Ryzen 5000 Series Desktop Processors: The Fastest Gaming CPUs in the World","publisher":"GlobeNewswire","link":"https://finance.yahoo.com/news/amd-launches-amd-ryzen-5000-163000254.html","providerPublishTime":1602174600,"type":"STORY"},{"uuid":"941aea23-3d9b-3633-a5f7-4f29bcdf95df","title":"AMD Is in Advanced Talks to Buy Xilinx","publisher":"The Wall Street Journal","link":"https://finance.yahoo.com/m/941aea23-3d9b-3633-a5f7-4f29bcdf95df/amd-is-in-advanced-talks-to.html","providerPublishTime":1602205800,"type":"STORY"}],"nav":[],"lists":[],"researchReports":[],"totalTime":23,"timeTakenForQuotes":408,"timeTakenForNews":600,"timeTakenForAlgowatchlist":400,"timeTakenForPredefinedScreener":400,"timeTakenForCrunchbase":0,"timeTakenForNav":400,"timeTakenForResearchReports":0};
-		// return results.quotes;
-		return $http({
-			url:"https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q="+searchText+"&region=US",
-			method:"GET",
-			headers: {
-				"x-rapidapi-key": "3da9a06586msh81767504ee21385p15455djsn146dbf5a3e2d",
-				"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
-			}})
-			.then(function(data) {
-				// Map the response object to the data object.
-				//map(x => x.shortname)
-				return data.data.quotes;});
-  	};
-	  $scope.getCurrentPrices = function() {
-		//calls are expensive, use this to mock it
-		var symbols = $scope.holdings.map(h => h.name.symbol);
-		// return results.quotes;
-		// var mybody = angular.element(document).find('body');
-		// mybody.addClass('waiting');   // set cursor to hourglass
-		var result = $http({
-			url:"https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/v2/get-quotes?symbols=" + symbols.join(",") + "&region=US",
-			method:"GET",
-			headers: {
-				"x-rapidapi-key": "3da9a06586msh81767504ee21385p15455djsn146dbf5a3e2d",
-				"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
-			}})
-			.then(function(response) {
-				$scope.holdings.filter(h => h.status != 'Sold').forEach(h => {
-					h.market = response.data.quoteResponse.result.filter(r => r.symbol == h.name.symbol)[0];
-					h.currentPrice = h.market.ask;
-				});	
-				localStorage.setItem("holdings", JSON.stringify($scope.holdings));
-			});
-			updateVariables()
-			// $scope.$apply();
-			// mybody.removeClass('waiting');  // set cursor to normal
-			return result;
-  	};
-// });
-// /*Storage*/
-// app.controller('tableCtrl', function($scope, $http) {
-  	if (localStorage.getItem("holdings") === null) {
-		$scope.holdings = [
-			{name:{exchange:"NMS",shortname:"Advanced Micro Devices, Inc.",quoteType:"EQUITY",symbol:"AMD",index:"quotes",score:14269400,typeDisp:"Equity",longname:"Advanced Micro Devices, Inc.",isYahooFinance:true},
-			shares:5,enter:75,coin:"usd",commissions:0.51,editing:false
-			}
-		];
-		localStorage.setItem("holdings", JSON.stringify($scope.holdings));
-	} else {
-		$scope.holdings = JSON.parse(localStorage.getItem("holdings"));
-	}
-
-	$scope.add = function() {
-		$scope.holdings.push({editing: true, status : 'Buy'});
-		// localStorage.setItem("holdings", JSON.stringify($scope.holdings));
-	}
-	$scope.change = function(ind) {
-		$scope.holdings[ind].editing = !($scope.holdings[ind].editing);
-		localStorage.setItem("holdings", JSON.stringify($scope.holdings));
-		updateVariables();
-	}
-	$scope.sell = function(ind) {
-		$scope.holdings[ind].status = "Selling";
-	}
-	$scope.confirmSell = function(ind) {
-		$scope.holdings[ind].status = "Sold";
-		localStorage.setItem("holdings", JSON.stringify($scope.holdings));
-		updateVariables();
-	}
-	$scope.delete = function(ind) {
-		$scope.holdings.splice(ind, 1); 
-		localStorage.setItem("holdings", JSON.stringify($scope.holdings));
-		updateVariables();
-	}
-
-	$scope.enterCost = function(holding) {
-		var result = parseFloat(((holding.shares * holding.enter) + holding.commissions).toFixed(2));
-		return Number.isNaN(result) ? 0 : result;
-	}
-	$scope.currentVal = function(holding) {
-		var result = parseFloat(((holding.shares * holding.currentPrice) - holding.commissions).toFixed(2));
-		return Number.isNaN(result) ? 0 : result;
-	}
-	
-	function updateVariables() {
-		$scope.soldOperations = $scope.holdings.filter(h => h.status === 'Sold');
-		$scope.totalResults = $scope.holdings.reduce((a,b) => +a + +($scope.currentVal(b) - $scope.enterCost(b)), 0).toFixed(2);
-		$scope.amountInvested = $scope.holdings.filter(h => h.status === 'Buy').map(h => (h.enter * h.shares).toFixed(2));
-		$scope.currentValue = $scope.holdings.filter(h => h.status === 'Buy').map(h => (h.currentPrice * h.shares).toFixed(2));
-		$scope.profitabilityOpen = $scope.holdings.filter(h => h.status === 'Buy').map(h => (((h.currentPrice * h.shares)/(h.enter * h.shares) -1)*100).toFixed(2));
-		$scope.labels = $scope.holdings.map(h => h.name.symbol);
-		$scope.openLabels = $scope.holdings.filter(h => h.status === 'Buy').map(h => h.name.symbol);
-		$scope.openPositions = $scope.holdings.filter(h => h.status === 'Buy');
-		$scope.profitabilityClosed = $scope.holdings.filter(h => h.status === 'Sold').map(h => (((h.currentPrice * h.shares)/(h.enter * h.shares) -1)*100).toFixed(2));
-		$scope.amountInvestedClosed = $scope.holdings.filter(h => h.status === 'Sold').map(h => (h.enter * h.shares).toFixed(2));
-		$scope.finalValue = $scope.holdings.filter(h => h.status === 'Sold').map(h => (h.currentPrice * h.shares).toFixed(2));
-		$scope.closedLabels = $scope.holdings.filter(h => h.status === 'Sold').map(h => h.name.symbol);
-		$scope.openColours = ["#0069af","#e42220","#eb671c","#feda02","#90c02e","#46a1d8","#243d91","#70368b"];
-		$scope.soldColours = ["#3e4d2d","#69652d","#937c2c","#875249","#7b2865","#bd94b2","#ffffff","#858585","#0a0a0a"];
-	}
-	updateVariables();
-});
-/*Components*/
-app.component('myRow', {
-	bindings: {
-		data : '<'
-	},
-	templateUrl: 'myRow.html'
-});
-
-/*Utils*/
-</script>
+            <charts holdings="holdings" side="'Buy'"></charts>
+            <charts holdings="holdings" side="'Sold'"></charts>
+            <div class="table-wrapper">
+               <table class="table table-bordered table-hover">
+                  <thead class="thead-light">
+                     <tr>
+                        <th scope="col">Symbol</th>
+                        <th scope="col" title="Price to earnings">PE Ratio (TTM)</th>
+                        <th scope="col" title="Earnings per share">EPS (TTM)</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="holding in holdings | filter:'Buy'">
+                        <th scope="row" class="align-middle"><span ng-bind="holding.name.shortname"></span></th>
+                        <th scope="row" class="align-middle"><span ng-bind="holding.market.trailingPE.toFixed(2)"></span></th>
+                        <th scope="row" class="align-middle"><span ng-bind="holding.market.epsTrailingTwelveMonths.toFixed(2)"></span></th>
+                     </tr>
+               </table>
+            </div>
+         </div>
+      </div>
+   </body>
 </html>

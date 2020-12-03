@@ -1,0 +1,76 @@
+<table ng-controller="tableCtrl" class="table table-bordered table-hover">
+    <thead class="thead-light">
+       <tr>
+          <th scope="col" class="text-center align-middle">Symbol</th>
+          <th scope="col" class="text-center align-middle">Status</th>
+          <th scope="col" class="text-center align-middle">Shares</th>
+          <th scope="col" class="text-center align-middle">Enter Price</th>
+          <th scope="col" class="text-center align-middle">Commissions</th>
+          <th scope="col" class="text-center align-middle">Enter Cost</th>
+          <th scope="col" class="text-center align-middle">Current Price per share</th>
+          <th scope="col" class="text-center align-middle">Current Value</th>
+          <th scope="col" class="text-center align-middle">Result</th>
+          <th scope="col"></th>
+       </tr>
+    </thead>
+    <tbody>
+       <tr ng-repeat="holding in $ctrl.holdings | orderBy:'status'">
+          <td scope="row" class="align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
+             <span ng-bind="holding.name.shortname" ng-if="!holding.editing"></span>
+             <div ng-cloak ng-if="holding.editing">
+                <md-content class="md-padding">
+                   <md-autocomplete md-selected-item="holding.name" md-items="item in autocompleteQuery(searchText)" md-search-text="searchText" md-item-text="item.shortname">
+                      <md-item-template>
+                         <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.exchange + ": " + item.shortname}}</span>
+                      </md-item-template>
+                      <md-not-found>No stocks matching "{{ctrl.searchText}}" were found.</md-not-found>
+                   </md-autocomplete>
+                </md-content>
+             </div>
+          </td>
+          <td class="text-center align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
+             <span ng-bind="holding.status"></span>
+          </td>
+          <td class="text-center align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
+             <span ng-bind="holding.shares" ng-if="!holding.editing"></span>
+             <input type="number" name="shares" ng-model="holding.shares" ng-if="holding.editing">
+          </td>
+          <td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
+             <span ng-bind="holding.enter" ng-if="!holding.editing"></span>
+             <input type="number" name="enter" ng-model="holding.enter" ng-if="holding.editing">
+          </td>
+          <td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
+             <span ng-bind="holding.commissions" ng-if="!holding.editing"></span>
+             <input type="number" name="commissions" ng-model="holding.commissions" ng-if="holding.editing">
+          </td>
+          <td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">{{ enterCost(holding) }}</td>
+          <td class="text-right align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
+             <span ng-bind="holding.currentPrice" ng-if="holding.status != 'Selling'"></span>
+             <input type="number" name="currentPrice" ng-model="holding.currentPrice" ng-if="holding.status === 'Selling'">
+          </td>
+          <td class="table-success text-center font-weight-bold align-middle" ng-class="{'table-danger' : enterCost(holding) > currentVal(holding)}">{{ currentVal(holding) }}</td>
+          <td class="table-success text-center font-weight-bold align-middle" ng-class="{'table-danger' : enterCost(holding) > currentVal(holding)}">{{ (currentVal(holding) - enterCost(holding)+holding.commissions).toFixed(2) }}</td>
+          <td class="align-middle" ng-class="{'table-secondary' : holding.status == 'Sold'}">
+             <button class="btn btn-primary" title="Edit" ng-click="change(holding.uuid)" ng-if="!holding.editing">Edit</button>
+             <button class="btn btn-success" title="Save" ng-click="change(holding.uuid)" ng-if="holding.editing">Save</button>
+             <button class="btn btn-warning" title="Sell" ng-click="sell(holding.uuid)" ng-if="holding.status != 'Selling' && holding.status != 'Sold'">Sell</button>
+             <button class="btn btn-success" title="Confirm" ng-click="confirmSell(holding.uuid)" ng-if="holding.status === 'Selling'">Confirm</button>
+             <button class="btn btn-danger" ng-click="delete(holding.uuid)">Delete</button>
+          </td>
+       </tr>
+    </tbody>  
+    <tfoot>
+        <tr class="text-center font-weight-bold align-middle">
+            <td class="table-dark"></td>
+            <td class="table-dark"></td>
+            <td class="table-dark"></td>
+            <td class="table-dark"></td>
+            <td class="table-dark"></td>
+            <td class="table-dark"></td>
+            <td class="table-dark"></td>
+            <td class="table-dark"></td>
+            <td ng-class="{'table-danger' : totalResults &lt; 0 }" class="table-success"><span ng-bind="totalResults"></span></td>
+            <td class="table-dark"></td>
+        </tr>
+    </tfoot>
+</table>

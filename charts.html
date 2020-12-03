@@ -1,0 +1,32 @@
+<!-- <span>Me cago en todo esto: {{$ctrl.holdings}}</span> -->
+<!-- <div ng-repeat="holding in $ctrl.holdings track by $index">
+    <span>{{holding.name.shortname}}</span>
+</div> -->
+
+<div ng-controller="ChartCtrl" class="row text-center" ng-if="$ctrl.holdings.length > 0">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header"><h5 class="card-title">{{$ctrl.side}} positions</h5></div>
+            <canvas id="invested" class="chart chart-pie" chart-data="amountInvested" chart-colors="$ctrl.colors" chart-labels="labels"></canvas>
+            <div class="card-body"><h5 class="card-title">Size by invested amount</h5></div>
+            <div class="card-body"><h5 class="card-title">Total {{totalInvested.toFixed(2)}} &euro;</h5></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100 ">
+            <div class="card-header"><h5 class="card-title">{{$ctrl.side}} positions</h5></div>
+            <canvas id="currentValue" class="chart chart-pie" chart-data="currentValue" chart-colors="$ctrl.colors" chart-labels="labels"></canvas>
+            <div class="card-body"><h5 class="card-title">Size by current value</h5></div>
+            <div class="card-body"><h5 class="card-title">Total {{currentTotal.toFixed(2)}} &euro;</h5></div>
+        </div>
+    </div>
+    <div class="col-lg-5 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header"><h5 class="card-title">{{$ctrl.side}} positions</h5></div>
+            <canvas id="Profit" class="chart chart-horizontal-bar" chart-data="profitability" chart-colors="$ctrl.colors" chart-labels="labels"></canvas>
+            <div class="card-body">
+                <h5 class="card-title">Profit of operation</h5>
+            </div>
+        </div>
+    </div>
+</div>
